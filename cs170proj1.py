@@ -12,10 +12,6 @@ class Node:
     def __init__(self, state, path_cost = 0):
         self.state = state
         self.path_cost = path_cost
-        self.children = []
-
-    def add_child(self, child):
-        self.children.append(child)
 
 def general_search(puzzle, queueing_function):
     nodes = make_queue(Node(puzzle))
@@ -29,7 +25,7 @@ def general_search(puzzle, queueing_function):
         if goal_test(node.state):
             return node
         
-        nodes = queueing_function(nodes, expand(node, puzzle.operators))
+        nodes = queueing_function(nodes, expand(node))
 
 def make_queue(node):
     queue = []
@@ -44,18 +40,45 @@ def goal_test(state):
     if state == goal_state:
         return True
 
+def expand(node):
+    children = []
+    for state in possible_moves(node.state):
+        children.append(Node(state, node.path_cost + 1))
+    return children
+
 def possible_moves(state):
     moves = []
     empty_spot = state.index(0)
-    # finish this
+    n = int(len(state) ** 0.5)
 
+    if empty_spot % n != 0:
+        moves.append.move(state, empty_spot, empty_spot - 1)
+    if empty_spot % n != n - 1:
+        moves.append.move(state, empty_spot, empty_spot + 1)
+    if empty_spot >= n:
+        moves.append.move(state, empty_spot, empty_spot - n)
+    if empty_spot < n * (n - 1):
+        moves.append.move(state, empty_spot, empty_spot + n)
+    
+    return moves
+
+def move(state, empty_spot, neighbor):
+    new_state = list(state)
+    temp = new_state[empty_spot]
+    new_state[empty_spot] = new_state[neighbor]
+    new_state[neighbor] = temp
+    return tuple(new_state)
 
 def select_algorithm(puzzle):
     algorithm = input("Choose an algorithm: '1' for Uniform Cost Search, '2' for A* " +
     "with the Misplaced Tile Heuristic, or '3' for the A* with the Manhattan Distance Heuristic.\n")
 
     if algorithm == "1":
-        general_search(puzzle, 0)
+        general_search(puzzle, uniform_cost_search)
+    if algorithm == "2":
+        general_search(puzzle, misplaced_title)
+    if algorithm == "3":
+        general_search(puzzle, manhattan_distance)
 
 def main():
     select_algorithm(test_puzzle)
