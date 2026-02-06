@@ -28,23 +28,34 @@ class Node:
 # general search function made from Dr. Eamonn Keogh's pseudocode on initial assignment
 def general_search(puzzle, queueing_function):
     nodes = make_queue(Node(puzzle))
+    nodes_expanded = 0
+    max_queue_size = 0
 
     while True:
+        if len(nodes) > max_queue_size:
+            max_queue_size = len(nodes)
+        
         # return "failure" if no more nodes
         if not nodes:
             return "failure"
 
         node = remove_front(nodes)
 
+        # prints puzzle
+        print("\nExpanding next state: ")
+        for i in range(0, 9, 3):
+                print(node.state[i:i+3])
+
         # check if state is the goal state
         if goal_test(node.state):
-            # prints puzzle
-            for i in range(0, 9, 3):
-                print(node.state[i:i+3])
+            print(f"\nNumber of nodes expanded: {nodes_expanded}")
+            print(f"Solution depth: {node.path_cost}")
+            print(f"Maximum size of queue: {max_queue_size}")
             return node
         
         # expand node accordingly to heuristic
         nodes = queueing_function(nodes, expand(node))
+        nodes_expanded += 1
 
 # creates a queue and pushes initial node
 def make_queue(node):
