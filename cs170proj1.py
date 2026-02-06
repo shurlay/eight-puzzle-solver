@@ -43,8 +43,10 @@ def general_search(puzzle, queueing_function):
 
         # prints puzzle
         print("\nExpanding next state: ")
-        for i in range(0, 9, 3):
-                print(node.state[i:i+3])
+        # get the side length of the puzzle
+        n = int(len(node.state) ** 0.5)
+        for i in range(0, len(node.state), n):
+                print(node.state[i:i+n])
 
         # check if state is the goal state
         if goal_test(node.state):
@@ -53,7 +55,7 @@ def general_search(puzzle, queueing_function):
             print(f"Maximum size of queue: {max_queue_size}")
             return node
         
-        # expand node accordingly to heuristic
+        # expand node according to heuristic
         nodes = queueing_function(nodes, expand(node))
         nodes_expanded += 1
 
@@ -123,7 +125,7 @@ def astar_misplaced_tile(nodes, children):
     global insertion_counter
     for child in children:
         h = 0
-        for i in range(9):
+        for i in range(len(child.state)):
             if (child.state[i] != goal_state[i] and child.state[i] != 0):
                 h += 1
         # pushes the lowest sum of the path cost and number of misplaced tiles
@@ -134,11 +136,13 @@ def astar_misplaced_tile(nodes, children):
 def astar_manhattan_distance(nodes, children):
     global insertion_counter
     for child in children:
+        # get the side length of the puzzle
+        n = int(len(child.state) ** 0.5)
         h = 0
-        for i in range(9):
+        for i in range(len(child.state)):
             if (child.state[i] != goal_state[i] and child.state[i] != 0):
                 index = goal_state.index(child.state[i])
-                h += abs((index - i) // 3) + abs((index - i) % 3)
+                h += abs((index - i) // n) + abs((index - i) % n)
         # pushes the lowest sum of the path cost and the distance from the current node to the goal state
         heapq.heappush(nodes, (child.path_cost + h, insertion_counter, child))
         insertion_counter += 1
@@ -159,8 +163,9 @@ def main():
     puzzle_choice = input("Welcome to the Eight Puzzle Solver!\n" +
                           "Please select '1' if you want a default puzzle or '2' to input a custom puzzle.\n")
     
+    # choose a default puzzle
     if puzzle_choice == "1":
-        difficulty = input("Choose '1' for an easy puzzle, '2' for a medium puzzle, or '3' for a hard puzzle.\n")
+        difficulty = input("\nChoose '1' for an easy puzzle, '2' for a medium puzzle, or '3' for a hard puzzle.\n")
 
         if difficulty == "1":
             select_algorithm(easy_puzzle)
@@ -168,6 +173,8 @@ def main():
             select_algorithm(medium_puzzle)
         if difficulty == "3":
             select_algorithm(hard_puzzle)
+    
+    # input custom puzzle
     if puzzle_choice == "2":
         first_row = input("Please input the first row separated with spaces (0 as the empty spot): ")
 
