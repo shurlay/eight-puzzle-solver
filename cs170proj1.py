@@ -2,9 +2,17 @@ import heapq as heapq
 
 insertion_counter = 0
 
-test_puzzle = (0, 1, 2,
+test_puzzle1 = (0, 1, 2,
                4, 5, 3,
                7, 8, 6)
+
+test_puzzle2 = (1, 3, 6,
+               5, 0, 7,
+               4, 8, 2)
+
+test_puzzle3 = (7, 1, 2,
+               4, 8, 5,
+               6, 3, 0)
 
 goal_state = (1, 2, 3,
               4, 5, 6,
@@ -82,19 +90,30 @@ def uniform_cost_search(nodes, children):
         insertion_counter += 1
     return nodes
 
+def astar_misplaced_tile(nodes, children):
+    global insertion_counter
+    for child in children:
+        h = 0
+        for i in range(9):
+            if (child.state[i] != goal_state[i] and child.state != 0):
+                h += 1
+        heapq.heappush(nodes, (child.path_cost + h, insertion_counter, child))
+        insertion_counter += 1
+    return nodes
+
 def select_algorithm(puzzle):
     algorithm = input("Choose an algorithm: '1' for Uniform Cost Search, '2' for A* " +
     "with the Misplaced Tile Heuristic, or '3' for the A* with the Manhattan Distance Heuristic.\n")
 
     if algorithm == "1":
         general_search(puzzle, uniform_cost_search)
-    # if algorithm == "2":
-    #     general_search(puzzle, misplaced_title)
+    if algorithm == "2":
+        general_search(puzzle, astar_misplaced_tile)
     # if algorithm == "3":
-    #     general_search(puzzle, manhattan_distance)
+    #     general_search(puzzle, astar_manhattan_distance)
 
 def main():
-    select_algorithm(test_puzzle)
+    select_algorithm(test_puzzle2)
 
 if __name__ == "__main__":
     main()
