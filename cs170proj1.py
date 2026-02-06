@@ -95,8 +95,20 @@ def astar_misplaced_tile(nodes, children):
     for child in children:
         h = 0
         for i in range(9):
-            if (child.state[i] != goal_state[i] and child.state != 0):
+            if (child.state[i] != goal_state[i] and child.state[i] != 0):
                 h += 1
+        heapq.heappush(nodes, (child.path_cost + h, insertion_counter, child))
+        insertion_counter += 1
+    return nodes
+
+def astar_manhattan_distance(nodes, children):
+    global insertion_counter
+    for child in children:
+        h = 0
+        for i in range(9):
+            if (child.state[i] != goal_state[i] and child.state[i] != 0):
+                index = goal_state.index(child.state[i])
+                h += abs((index - i) // 3) + abs((index - i) % 3)
         heapq.heappush(nodes, (child.path_cost + h, insertion_counter, child))
         insertion_counter += 1
     return nodes
@@ -109,11 +121,11 @@ def select_algorithm(puzzle):
         general_search(puzzle, uniform_cost_search)
     if algorithm == "2":
         general_search(puzzle, astar_misplaced_tile)
-    # if algorithm == "3":
-    #     general_search(puzzle, astar_manhattan_distance)
+    if algorithm == "3":
+        general_search(puzzle, astar_manhattan_distance)
 
 def main():
-    select_algorithm(test_puzzle2)
+    select_algorithm(test_puzzle3)
 
 if __name__ == "__main__":
     main()
